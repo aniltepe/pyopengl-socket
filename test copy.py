@@ -3,26 +3,8 @@ from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 import numpy as np
 
-vertex_src = """
-# version 330 core
-in vec3 a_position;
-void main() {
-    gl_Position = vec4(a_position, 1.0);
-}
-"""
 
-fragment_src = """
-# version 330 core
-out vec4 out_color;
-void main() {
-    out_color = vec4(1.0, 0.0, 0.0, 1.0);
-}
-"""
-
-window = None
-
-def init():
-    global window
+def main():
     if not glfw.init():
         print("Cannot initialize GLFW")
         exit()
@@ -39,10 +21,6 @@ def init():
 
     glfw.set_window_pos(window, 100, 100)
     glfw.make_context_current(window)
-
-
-def run():
-    global window
     vertices = [-0.5, -0.5, 0.0,
                 0.5, -0.5, 0.0,
                 0.0, 0.5, 0.0]
@@ -58,8 +36,9 @@ def run():
 
     vao = glGenVertexArrays(1)
     glBindVertexArray(vao)
-    shader = compileProgram(compileShader(
-        vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
+    vs = open("shader.vs", "r")
+    fs = open("shader.fs", "r")
+    shader = compileProgram(compileShader(vs.read(), GL_VERTEX_SHADER), compileShader(fs.read(), GL_FRAGMENT_SHADER))
     position = glGetAttribLocation(shader, "a_position")
     glEnableVertexAttribArray(position)
     glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, ctypes.c_void_p(0))
@@ -75,3 +54,7 @@ def run():
         glfw.swap_buffers(window)
 
     glfw.terminate()
+
+
+if __name__ == '__main__':
+    main()
